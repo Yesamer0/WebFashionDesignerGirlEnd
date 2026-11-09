@@ -1,0 +1,372 @@
+﻿@model WebFashionDesignerGirl.Models.AppUser
+@{
+    Layout = "_Layout";
+}
+
+@* CSS ve Stil Kodlarını buraya aldım, Layout içindeki head kısmına dahil olacaklar *@
+<style>
+    :root {
+        --dark-choc: #443025;
+        --sakura: #EC9C9D;
+        --blush: #F9E8E8;
+        --white: #ffffff;
+    }
+
+    /* Layout'tan gelen body ayarlarını ezmemek için container bazlı ilerliyoruz */
+    .profile-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding-bottom: 100px; /* Alt menüye çarpmaması için */
+    }
+
+    /* Üst Profil Kartı */
+    .profile-header {
+        background: linear-gradient(to right, #e0a3a4, #f9e8e8);
+        border-radius: 30px;
+        padding: 40px;
+        text-align: center;
+        position: relative;
+        margin-bottom: 20px;
+        margin-top: 60px;
+    }
+
+    .avatar-wrapper {
+        position: relative;
+        display: inline-block;
+        margin-top: -80px;
+    }
+
+    .avatar {
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        border: 5px solid white;
+        object-fit: cover;
+        background: white;
+    }
+
+    .btn-upload {
+        position: absolute;
+        bottom: 5px;
+        right: 5px;
+        background-color: var(--sakura);
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: 2px solid white;
+        font-size: 14px;
+    }
+
+    .stats-bar {
+        display: flex;
+        justify-content: space-around;
+        background: white;
+        border-radius: 20px;
+        padding: 15px;
+        margin-top: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    }
+
+    .stat-item b {
+        display: block;
+        font-size: 18px;
+    }
+
+    .stat-item span {
+        font-size: 12px;
+        color: #888;
+    }
+
+    .profile-card {
+        background: white;
+        border-radius: 25px;
+        padding: 25px;
+        margin-bottom: 20px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+        color: var(--dark-choc);
+    }
+
+    .item-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 15px;
+    }
+
+    .fashion-item {
+        background: var(--blush);
+        border-radius: 15px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px dashed #eecaca;
+        color: #d69596;
+        transition: transform 0.2s;
+    }
+
+        .fashion-item:hover {
+            transform: scale(1.05);
+        }
+
+    .kombin-row {
+        background: linear-gradient(90deg, #f9e8e8, #ffffff);
+        padding: 15px;
+        border-radius: 15px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 5px solid var(--sakura);
+    }
+
+    /* --- MODAL CSS --- */
+    #clothesModal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 300px;
+        height: 380px;
+        background: white;
+        border-radius: 30px;
+        box-shadow: 0 15px 40px rgba(236, 156, 157, 0.4);
+        z-index: 2000; /* Layout üstünde durması için artırıldı */
+        text-align: center;
+        padding: 20px;
+        border: 4px solid var(--sakura);
+    }
+
+    #modalOverlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(68, 48, 37, 0.4);
+        backdrop-filter: blur(3px);
+        z-index: 1999;
+    }
+</style>
+
+<div class="profile-container">
+
+    <div class="profile-header">
+        <div class="avatar-wrapper">
+            <img src="@(string.IsNullOrEmpty(Model.ProfilePictureUrl) ? "/images/default-avatar.png" : Model.ProfilePictureUrl)"
+                 class="avatar" />
+
+            <form action="/Account/UpdateProfilePicture" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="userId" value="@Model.Id" />
+                <label class="btn-upload">
+                    <span>✎</span>
+                    <input type="file" name="profilePic" onchange="this.form.submit()" style="display:none;" />
+                </label>
+            </form>
+        </div>
+
+        <h2 style="margin: 10px 0 5px 0; color: var(--dark-choc);">@Model.UserName</h2>
+        <p style="color: var(--sakura); font-weight: 600;">✦ @("@" + Model.ModaAdi)</p>
+
+        <div class="stats-bar">
+            <div class="stat-item"><b>@Model.StylePoints</b><span>Stil Puanı</span></div>
+            <div class="stat-item"><b>0</b><span>Kombinler</span></div>
+            <div class="stat-item"><b>0</b><span>Takipçi</span></div>
+        </div>
+    </div>
+
+    <div class="profile-card">
+        <h3>🧬 Stil DNA'n</h3>
+        <p style="font-size: 14px; color: #666;">Henüz yeterli kombin yapmadın, ama üzülme. Stilini analiz etmemiz için kombinlerini paylaşmaya başla!</p>
+    </div>
+
+    <div class="profile-card">
+        <h3>👗 Dijital Gardırop</h3>
+        <div class="item-list">
+            @if (Model.UserWardrobes != null && Model.UserWardrobes.Count > 0)
+            {
+                foreach (var item in Model.UserWardrobes.Where(w => w.ClothingItemId >= 11))
+                {
+                    <div class="fashion-item" style="border-style: none; cursor: pointer;"
+                         onclick="openClothesModal('@item.ClothingItem.ImageUrl', '@item.ClothingItem.Name')">
+                        @if (item.ClothingItem != null)
+                        {
+                            <img src="@item.ClothingItem.ImageUrl" alt="@item.ClothingItem.Name"
+                                 style="width: 100%; height: 100%; object-fit: contain;" />
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="fashion-item">Henüz Boş</div>
+            }
+            <div class="fashion-item" style="border-style: solid; cursor: pointer;" onclick="openShopModal()">+ Ekle</div>
+        </div>
+    </div>
+
+    <div class="profile-card">
+        <h3>✨ Kombinlerim</h3>
+
+        @if (Model.Lookbooks != null && Model.Lookbooks.Any())
+        {
+            <div class="item-list">
+                @foreach (var look in Model.Lookbooks.OrderByDescending(l => l.CreatedAt))
+                {
+                    <div class="fashion-item" style="border-style:none; cursor:pointer; position:relative;"
+                         onclick="openClothesModal('@look.ImageUrl', '@look.LookName')">
+                        @if (!string.IsNullOrEmpty(look.ImageUrl))
+                        {
+                            <img src="@look.ImageUrl" alt="@look.LookName"
+                                 style="width:100%; height:100%; object-fit:cover; border-radius:13px;" />
+                        }
+                        else
+                        {
+                            <span style="font-size:2rem">👗</span>
+                        }
+                        <div style="position:absolute; bottom:0; left:0; right:0;
+                                        background:rgba(68,48,37,0.6); border-radius:0 0 13px 13px;
+                                        padding:4px; font-size:9px; color:#fff; text-align:center;
+                                        white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                            @look.LookName
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="kombin-row">
+                <span>Henüz kombin oluşturulmadı.</span>
+                <a href="/Studio/Index" style="background: var(--dark-choc); color: white; border: none;
+                   border-radius: 10px; padding: 5px 15px; text-decoration:none; font-size:13px;">
+                    Oluştur
+                </a>
+            </div>
+        }
+
+        <!-- Stats bar'daki Kombinler sayısını da güncelle -->
+        <script>
+            document.querySelectorAll('.stat-item b')[1].textContent = '@(Model.Lookbooks?.Count ?? 0)';
+        </script>
+
+    </div>
+
+</div>
+
+@* Modal Yapısı *@
+<div id="modalOverlay" onclick="closeModal()"></div>
+<div id="clothesModal">
+    <span onclick="closeModal()" style="position:absolute; right:15px; top:10px; cursor:pointer; font-size:28px; color: var(--sakura); font-weight:bold;">&times;</span>
+    <div style="background: var(--blush); border-radius: 20px; padding: 15px; margin-top: 10px;">
+        <img id="modalImg" src="" style="width:200px; height:200px; object-fit:contain;">
+    </div>
+    <h4 id="modalTitle" style="margin-top:20px; color: var(--dark-choc);"></h4>
+    <p id="modalStylePoints" style="font-size: 12px; color: var(--sakura); font-weight: bold;">✦ Stil Puanı: +30 ✦</p>
+    <button onclick="closeModal()" style="background: var(--sakura); color: white; border: none; border-radius: 15px; padding: 10px 20px; margin-top: 10px; cursor: pointer; font-weight: bold;">Harika!</button>
+</div>
+
+<script>
+    function openClothesModal(url, name) {
+        document.getElementById('modalImg').src = url;
+        document.getElementById('modalTitle').innerText = name;
+        document.getElementById('clothesModal').style.display = 'block';
+        document.getElementById('modalOverlay').style.display = 'block';
+    }
+
+    function closeModal() {
+        document.getElementById('clothesModal').style.display = 'none';
+        document.getElementById('modalOverlay').style.display = 'none';
+    }
+
+
+
+</script>
+
+
+
+<!-- Kıyafet Satın Alma Modal -->
+<div id="shopOverlay" onclick="closeShopModal()" style="display:none; position:fixed; inset:0; background:rgba(68,48,37,0.5); z-index:1999; backdrop-filter:blur(4px)"></div>
+
+<div id="shopModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+     width:320px; background:white; border-radius:24px; z-index:2000; padding:2rem; text-align:center;
+     box-shadow:0 24px 60px rgba(68,48,37,0.18); border:1px solid rgba(236,156,157,0.3)">
+
+    <div style="font-size:2.5rem; margin-bottom:0.75rem">🛍️</div>
+    <h3 style="font-family:'Cormorant Garamond',serif; font-size:1.4rem; color:#443025; margin-bottom:0.5rem">Kıyafet Al</h3>
+    <p style="font-size:13px; color:#7F5836; margin-bottom:0.25rem">Mevcut Puanın: <strong id="currentPoints">@Model.StylePoints</strong> ✦</p>
+    <p style="font-size:12px; color:#AA7F66; margin-bottom:1.5rem">1 kıyafet = 100 puan</p>
+
+    <p style="font-size:13px; font-weight:500; color:#443025; margin-bottom:1rem">Ne almak istiyorsun?</p>
+
+    <div style="display:flex; gap:10px; justify-content:center; margin-bottom:1.5rem">
+        <button onclick="buyItem('Üst Giyim')"
+                style="flex:1; background:#F7E9EC; color:#443025; border:1.5px solid rgba(236,156,157,0.4);
+                   padding:12px; border-radius:14px; cursor:pointer; font-family:'DM Sans',sans-serif;
+                   font-size:13px; font-weight:500; transition:all 0.2s"
+                onmouseover="this.style.background='#EC9C9D';this.style.color='white'"
+                onmouseout="this.style.background='#F7E9EC';this.style.color='#443025'">
+            👕 Üst Giyim
+        </button>
+        <button onclick="buyItem('Alt Giyim')"
+                style="flex:1; background:#F7E9EC; color:#443025; border:1.5px solid rgba(236,156,157,0.4);
+                   padding:12px; border-radius:14px; cursor:pointer; font-family:'DM Sans',sans-serif;
+                   font-size:13px; font-weight:500; transition:all 0.2s"
+                onmouseover="this.style.background='#EC9C9D';this.style.color='white'"
+                onmouseout="this.style.background='#F7E9EC';this.style.color='#443025'">
+            👖 Alt Giyim
+        </button>
+    </div>
+
+    <div id="shopResult" style="display:none; margin-bottom:1rem">
+        <img id="shopItemImg" src="" style="width:100px; height:120px; object-fit:contain; border-radius:10px; margin-bottom:8px" />
+        <p id="shopItemName" style="font-size:13px; font-weight:500; color:#443025; margin:0"></p>
+        <p style="font-size:11px; color:#EC9C9D; margin:4px 0 0">Gardırobuna eklendi! 🎀</p>
+    </div>
+
+    <button onclick="closeShopModal()"
+            style="background:#443025; color:white; border:none; padding:10px 28px;
+                   border-radius:50px; font-size:12px; font-weight:500; cursor:pointer;
+                   font-family:'DM Sans',sans-serif; width:100%">
+        Kapat
+    </button>
+</div>
+
+<script>
+    function openShopModal() {
+        document.getElementById('shopModal').style.display = 'block';
+        document.getElementById('shopOverlay').style.display = 'block';
+        document.getElementById('shopResult').style.display = 'none';
+    }
+
+    function closeShopModal() {
+        document.getElementById('shopModal').style.display = 'none';
+        document.getElementById('shopOverlay').style.display = 'none';
+    }
+
+    async function buyItem(category) {
+        const resp = await fetch('/Account/BuyItem', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ category: category })
+        });
+        const res = await resp.json();
+
+        if (res.success) {
+            document.getElementById('currentPoints').textContent = res.remainingPoints;
+            document.getElementById('shopItemImg').src = res.imageUrl;
+            document.getElementById('shopItemName').textContent = res.itemName;
+            document.getElementById('shopResult').style.display = 'block';
+            // Stat bar'daki puanı güncelle
+            document.querySelectorAll('.stat-item b')[0].textContent = res.remainingPoints;
+        } else {
+            alert(res.message);
+        }
+    }
+</script>

@@ -1,0 +1,681 @@
+﻿@using Microsoft.AspNetCore.Http
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Topluluk";
+    var userId = Context.Session.GetInt32("UserId");
+    var userEmail = Context.Session.GetString("UserEmail");
+}
+
+<!-- ══════════════════ HERO ══════════════════ -->
+<section class="cm-hero">
+    <span class="cm-tag">✦ Fashion Girl Topluluğu</span>
+    <h1 class="cm-title">Stil<em>Topluluğu</em></h1>
+    <p class="cm-sub">İlham al, paylaş, büyü. Binlerce moda tutkunuyla aynı platformdasın.</p>
+</section>
+
+<!-- ══════════════════ KİŞİSEL HOŞGELDİN ══════════════════ -->
+<div class="cm-welcome-wrap">
+    <div class="cm-welcome-card">
+        <div class="cm-welcome-left">
+            <div class="cm-welcome-avatar">🦋</div>
+            <div>
+                <h2 class="cm-welcome-title">
+                    @if (userId != null)
+                    {
+                        <span>Hoş geldin, <em>Yesamer!</em> ✦</span>
+                    }
+                    else
+                    {
+                        <span>Topluluğa <em>Katıl!</em> ✦</span>
+                    }
+                </h2>
+                <p class="cm-welcome-text">
+                    @if (userId != null)
+                    {
+                        <span>Bugün hangi kombini paylaşacaksın? Gardırobun seni bekliyor — yeni bir look oluştur, topluluğunla paylaş ve stil puanları kazan. Unutma, her kombin seni bir adım daha ileri taşır! 🎀</span>
+                    }
+                    else
+                    {
+                        <span>Fashion Girl topluluğuna katılmak için giriş yap. Kombinlerini paylaş, diğer tasarımcılardan ilham al ve stil puanları kazan!</span>
+                    }
+                </p>
+                <div class="cm-welcome-stats">
+                    <div class="cm-ws-item">
+                        <span class="cm-ws-num">2.4K+</span>
+                        <span class="cm-ws-label">Tasarımcı</span>
+                    </div>
+                    <div class="cm-ws-divider"></div>
+                    <div class="cm-ws-item">
+                        <span class="cm-ws-num">18K+</span>
+                        <span class="cm-ws-label">Kombin</span>
+                    </div>
+                    <div class="cm-ws-divider"></div>
+                    <div class="cm-ws-item">
+                        <span class="cm-ws-num">6</span>
+                        <span class="cm-ws-label">Aktif Grup</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="cm-welcome-actions">
+            @if (userId != null)
+            {
+                <a href="/Studio/Index" class="cm-btn-primary">Kombin Oluştur ✦</a>
+                <a href="/Lookbook/Index" class="cm-btn-ghost">Galeriye Git →</a>
+            }
+            else
+            {
+                <a href="/Account/Login" class="cm-btn-primary">Giriş Yap ✦</a>
+                <a href="/Account/Login" class="cm-btn-ghost">Kayıt Ol →</a>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════ GRUPLAR BAŞLIK ══════════════════ -->
+<div class="cm-section-header">
+    <div>
+        <span class="cm-tag">Moda Grupları</span>
+        <h2 class="cm-section-title">Gruplara <em>Katıl</em></h2>
+    </div>
+    <p class="cm-section-sub">İlgi alanına göre bir gruba katıl, kombinlerini paylaş ve ilham al.</p>
+</div>
+
+<!-- ══════════════════ GRUP GRİDİ ══════════════════ -->
+<div class="cm-container">
+    <div class="cm-groups-grid">
+
+        <!-- Grup 1 -->
+        <div class="cm-group-card">
+            <div class="cm-group-cover" style="background: linear-gradient(135deg, #f9dde0, #ec9c9d)">
+                <span class="cm-group-emoji">🌸</span>
+            </div>
+            <div class="cm-group-body">
+                <div class="cm-group-top">
+                    <span class="cm-group-cat">Günlük</span>
+                    <span class="cm-group-members">👥 842 üye</span>
+                </div>
+                <h3 class="cm-group-name">Soft Girl Aesthetic</h3>
+                <p class="cm-group-desc">Pastel tonlar, fırfırlar ve feminen detaylarla dolu günlük kombiner. Soft girl stilini seven herkes buraya!</p>
+                <div class="cm-group-tags">
+                    <span class="cm-tag-chip">pastel</span>
+                    <span class="cm-tag-chip">fırfır</span>
+                    <span class="cm-tag-chip">feminen</span>
+                </div>
+                <div class="cm-group-footer">
+                    <div class="cm-group-avatars">
+                        <div class="cm-mini-av" style="background:#f9a8b8">S</div>
+                        <div class="cm-mini-av" style="background:#ec9c9d">A</div>
+                        <div class="cm-mini-av" style="background:#d4849a">M</div>
+                    </div>
+                    <button class="cm-join-btn">Katıl</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grup 2 -->
+        <div class="cm-group-card">
+            <div class="cm-group-cover" style="background: linear-gradient(135deg, #c9a98a, #7f5836)">
+                <span class="cm-group-emoji">☕</span>
+            </div>
+            <div class="cm-group-body">
+                <div class="cm-group-top">
+                    <span class="cm-group-cat">Minimal</span>
+                    <span class="cm-group-members">👥 1.2K üye</span>
+                </div>
+                <h3 class="cm-group-name">Capsule Wardrobe Club</h3>
+                <p class="cm-group-desc">Az parça, çok kombinle sürdürülebilir moda. Kapsül dolap prensiplerini benimseyen tasarımcılar için.</p>
+                <div class="cm-group-tags">
+                    <span class="cm-tag-chip">minimal</span>
+                    <span class="cm-tag-chip">sürdürülebilir</span>
+                    <span class="cm-tag-chip">kapsül</span>
+                </div>
+                <div class="cm-group-footer">
+                    <div class="cm-group-avatars">
+                        <div class="cm-mini-av" style="background:#aa7f66">Y</div>
+                        <div class="cm-mini-av" style="background:#c9a98a">B</div>
+                        <div class="cm-mini-av" style="background:#7f5836;color:#fff">K</div>
+                    </div>
+                    <button class="cm-join-btn">Katıl</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grup 3 -->
+        <div class="cm-group-card">
+            <div class="cm-group-cover" style="background: linear-gradient(135deg, #443025, #7f5836)">
+                <span class="cm-group-emoji">🖤</span>
+            </div>
+            <div class="cm-group-body">
+                <div class="cm-group-top">
+                    <span class="cm-group-cat">Streetwear</span>
+                    <span class="cm-group-members">👥 634 üye</span>
+                </div>
+                <h3 class="cm-group-name">Dark Academia</h3>
+                <p class="cm-group-desc">Koyu tonlar, vintage parçalar ve entelektüel estetik. Kitap, kahve ve şık kıyafetleri seven ruhlar için.</p>
+                <div class="cm-group-tags">
+                    <span class="cm-tag-chip">vintage</span>
+                    <span class="cm-tag-chip">dark</span>
+                    <span class="cm-tag-chip">akademik</span>
+                </div>
+                <div class="cm-group-footer">
+                    <div class="cm-group-avatars">
+                        <div class="cm-mini-av" style="background:#443025;color:#fff">D</div>
+                        <div class="cm-mini-av" style="background:#7f5836;color:#fff">E</div>
+                        <div class="cm-mini-av" style="background:#aa7f66">N</div>
+                    </div>
+                    <button class="cm-join-btn">Katıl</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grup 4 -->
+        <div class="cm-group-card">
+            <div class="cm-group-cover" style="background: linear-gradient(135deg, #fde8e8, #f7c5c5)">
+                <span class="cm-group-emoji">🎀</span>
+            </div>
+            <div class="cm-group-body">
+                <div class="cm-group-top">
+                    <span class="cm-group-cat">Coquette</span>
+                    <span class="cm-group-members">👥 975 üye</span>
+                </div>
+                <h3 class="cm-group-name">Coquette & Bow Girls</h3>
+                <p class="cm-group-desc">Kurdeleler, dantel, mini etekler ve çiçekli detaylarla dolu feminen estetik. Coquette stilini seviyorsan burası senin için!</p>
+                <div class="cm-group-tags">
+                    <span class="cm-tag-chip">kurdele</span>
+                    <span class="cm-tag-chip">dantel</span>
+                    <span class="cm-tag-chip">coquette</span>
+                </div>
+                <div class="cm-group-footer">
+                    <div class="cm-group-avatars">
+                        <div class="cm-mini-av" style="background:#ec9c9d">P</div>
+                        <div class="cm-mini-av" style="background:#f7c5c5">L</div>
+                        <div class="cm-mini-av" style="background:#fde8e8">Z</div>
+                    </div>
+                    <button class="cm-join-btn">Katıl</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grup 5 -->
+        <div class="cm-group-card">
+            <div class="cm-group-cover" style="background: linear-gradient(135deg, #e8d5c4, #aa7f66)">
+                <span class="cm-group-emoji">✨</span>
+            </div>
+            <div class="cm-group-body">
+                <div class="cm-group-top">
+                    <span class="cm-group-cat">Elegant</span>
+                    <span class="cm-group-members">👥 511 üye</span>
+                </div>
+                <h3 class="cm-group-name">Old Money Aesthetic</h3>
+                <p class="cm-group-desc">Klasik kesimler, kaliteli kumaşlar ve zamansız şıklık. Old money estetiğini hayatına taşımak isteyenler için.</p>
+                <div class="cm-group-tags">
+                    <span class="cm-tag-chip">klasik</span>
+                    <span class="cm-tag-chip">şık</span>
+                    <span class="cm-tag-chip">zamansız</span>
+                </div>
+                <div class="cm-group-footer">
+                    <div class="cm-group-avatars">
+                        <div class="cm-mini-av" style="background:#e8d5c4">C</div>
+                        <div class="cm-mini-av" style="background:#aa7f66">R</div>
+                        <div class="cm-mini-av" style="background:#7f5836;color:#fff">T</div>
+                    </div>
+                    <button class="cm-join-btn">Katıl</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grup 6 -->
+        <div class="cm-group-card">
+            <div class="cm-group-cover" style="background: linear-gradient(135deg, #f2cf2a, #e8b84b)">
+                <span class="cm-group-emoji">🌻</span>
+            </div>
+            <div class="cm-group-body">
+                <div class="cm-group-top">
+                    <span class="cm-group-cat">Yazlık</span>
+                    <span class="cm-group-members">👥 728 üye</span>
+                </div>
+                <h3 class="cm-group-name">Summer Vibes ☀️</h3>
+                <p class="cm-group-desc">Yazın en renkli ve özgür kombinleri burada! Plaj, piknik ve yaz akşamları için ilham dolu looklar seni bekliyor.</p>
+                <div class="cm-group-tags">
+                    <span class="cm-tag-chip">yaz</span>
+                    <span class="cm-tag-chip">renkli</span>
+                    <span class="cm-tag-chip">plaj</span>
+                </div>
+                <div class="cm-group-footer">
+                    <div class="cm-group-avatars">
+                        <div class="cm-mini-av" style="background:#f2cf2a">S</div>
+                        <div class="cm-mini-av" style="background:#e8b84b">U</div>
+                        <div class="cm-mini-av" style="background:#ec9c9d">N</div>
+                    </div>
+                    <button class="cm-join-btn">Katıl</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    :root {
+        --chocolate: #443025;
+        --aloewood: #7F5836;
+        --milktea: #AA7F66;
+        --sakura: #EC9C9D;
+        --blush: #F7E9EC;
+        --cream: #FAF4F0;
+    }
+
+    /* ── Hero ─────────────────────────────── */
+    .cm-hero {
+        text-align: center;
+        padding: 4rem 2rem 2rem;
+        background: linear-gradient(180deg, var(--blush) 0%, var(--cream) 100%);
+        border-bottom: 1px solid rgba(236,156,157,0.15);
+    }
+
+    .cm-tag {
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--milktea);
+        font-weight: 500;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .cm-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(2.8rem, 6vw, 5rem);
+        font-weight: 600;
+        color: var(--chocolate);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        line-height: 1;
+        margin: 0.4rem 0 0.6rem;
+    }
+
+        .cm-title em {
+            font-style: italic;
+            color: var(--sakura);
+            font-weight: 300;
+        }
+
+    .cm-sub {
+        font-size: 0.9rem;
+        color: var(--aloewood);
+        font-weight: 300;
+    }
+
+    /* ── Welcome Card ─────────────────────── */
+    .cm-welcome-wrap {
+        padding: 2rem 3rem;
+        max-width: 1300px;
+        margin: 0 auto;
+    }
+
+    .cm-welcome-card {
+        background: #fff;
+        border: 1px solid rgba(236,156,157,0.2);
+        border-radius: 24px;
+        padding: 2rem 2.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 2rem;
+        box-shadow: 0 8px 32px rgba(68,48,37,0.06);
+    }
+
+    .cm-welcome-left {
+        display: flex;
+        align-items: flex-start;
+        gap: 1.5rem;
+        flex: 1;
+    }
+
+    .cm-welcome-avatar {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--blush), var(--sakura));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        flex-shrink: 0;
+        border: 2px solid rgba(236,156,157,0.3);
+    }
+
+    .cm-welcome-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: var(--chocolate);
+        margin: 0 0 0.5rem;
+    }
+
+        .cm-welcome-title em {
+            font-style: italic;
+            color: var(--sakura);
+        }
+
+    .cm-welcome-text {
+        font-size: 0.88rem;
+        color: var(--aloewood);
+        line-height: 1.7;
+        margin: 0 0 1rem;
+        max-width: 500px;
+    }
+
+    .cm-welcome-stats {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .cm-ws-item {
+        text-align: center;
+    }
+
+    .cm-ws-num {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--chocolate);
+        display: block;
+    }
+
+    .cm-ws-label {
+        font-size: 10px;
+        color: var(--milktea);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .cm-ws-divider {
+        width: 1px;
+        height: 30px;
+        background: rgba(236,156,157,0.25);
+    }
+
+    .cm-welcome-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+
+    /* ── Buttons ──────────────────────────── */
+    .cm-btn-primary {
+        display: inline-block;
+        background: var(--chocolate);
+        color: var(--cream);
+        border: none;
+        padding: 10px 22px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        text-decoration: none;
+        transition: background 0.2s;
+        text-align: center;
+    }
+
+        .cm-btn-primary:hover {
+            background: var(--aloewood);
+            color: var(--cream);
+            text-decoration: none;
+        }
+
+    .cm-btn-ghost {
+        display: inline-block;
+        background: transparent;
+        color: var(--aloewood);
+        border: 1px solid rgba(236,156,157,0.4);
+        padding: 9px 20px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+        text-align: center;
+    }
+
+        .cm-btn-ghost:hover {
+            border-color: var(--sakura);
+            color: var(--chocolate);
+            text-decoration: none;
+        }
+
+    /* ── Section Header ───────────────────── */
+    .cm-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        padding: 2.5rem 3rem 1rem;
+        max-width: 1300px;
+        margin: 0 auto;
+    }
+
+    .cm-section-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--chocolate);
+        margin: 4px 0 0;
+    }
+
+        .cm-section-title em {
+            font-style: italic;
+            color: var(--sakura);
+            font-weight: 300;
+        }
+
+    .cm-section-sub {
+        font-size: 0.85rem;
+        color: var(--aloewood);
+        max-width: 340px;
+        text-align: right;
+    }
+
+    /* ── Grid ─────────────────────────────── */
+    .cm-container {
+        padding: 0 3rem 5rem;
+        max-width: 1300px;
+        margin: 0 auto;
+    }
+
+    .cm-groups-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+    }
+
+    /* ── Group Card ───────────────────────── */
+    .cm-group-card {
+        background: #fff;
+        border: 1px solid rgba(236,156,157,0.2);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    }
+
+        .cm-group-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 44px rgba(68,48,37,0.1);
+            border-color: var(--sakura);
+        }
+
+    .cm-group-cover {
+        height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+
+    .cm-group-emoji {
+        font-size: 3rem;
+        filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15));
+    }
+
+    .cm-group-body {
+        padding: 1.25rem;
+    }
+
+    .cm-group-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .cm-group-cat {
+        font-size: 9px;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--milktea);
+        background: rgba(236,156,157,0.1);
+        padding: 3px 10px;
+        border-radius: 50px;
+        border: 1px solid rgba(236,156,157,0.2);
+    }
+
+    .cm-group-members {
+        font-size: 11px;
+        color: var(--milktea);
+    }
+
+    .cm-group-name {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.15rem;
+        font-weight: 600;
+        color: var(--chocolate);
+        margin: 0 0 0.5rem;
+    }
+
+    .cm-group-desc {
+        font-size: 12px;
+        color: var(--aloewood);
+        line-height: 1.6;
+        margin: 0 0 0.75rem;
+    }
+
+    .cm-group-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 1rem;
+    }
+
+    .cm-tag-chip {
+        font-size: 9px;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        color: var(--aloewood);
+        background: var(--cream);
+        padding: 3px 9px;
+        border-radius: 50px;
+        border: 1px solid rgba(236,156,157,0.2);
+    }
+
+    .cm-group-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .cm-group-avatars {
+        display: flex;
+    }
+
+    .cm-mini-av {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--chocolate);
+        border: 2px solid #fff;
+        margin-left: -6px;
+    }
+
+        .cm-mini-av:first-child {
+            margin-left: 0;
+        }
+
+    .cm-join-btn {
+        background: var(--chocolate);
+        color: var(--cream);
+        border: none;
+        padding: 7px 18px;
+        border-radius: 50px;
+        font-size: 11px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        transition: background 0.2s;
+    }
+
+        .cm-join-btn:hover {
+            background: var(--aloewood);
+        }
+
+        .cm-join-btn.joined {
+            background: var(--sakura);
+        }
+
+    @@media (max-width: 1000px) {
+        .cm-groups-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .cm-welcome-wrap, .cm-section-header, .cm-container {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+    }
+
+    @@media (max-width: 640px) {
+        .cm-groups-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .cm-welcome-card {
+            flex-direction: column;
+        }
+
+        .cm-welcome-actions {
+            flex-direction: row;
+            width: 100%;
+        }
+
+        .cm-section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .cm-section-sub {
+            text-align: left;
+        }
+    }
+</style>
+
+<script>
+    document.querySelectorAll('.cm-join-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            if (this.classList.contains('joined')) {
+                this.classList.remove('joined');
+                this.textContent = 'Katıl';
+            } else {
+                this.classList.add('joined');
+                this.textContent = 'Katıldın ✓';
+            }
+        });
+    });
+</script>

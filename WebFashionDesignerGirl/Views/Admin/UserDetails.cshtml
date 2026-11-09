@@ -1,0 +1,88 @@
+﻿@model WebFashionDesignerGirl.Models.AppUser
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 style="color: #ff69b4; font-weight: bold;">🎀 @Model.ModaAdi İçin Stil Paneli</h2>
+        <a asp-action="Index" class="btn btn-outline-secondary btn-sm" style="border-radius: 15px;">⬅ Listeye Dön</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm border-0" style="border-radius: 20px;">
+                <div class="card-header bg-white border-0 text-center pt-4">
+                    <h5 style="color: #d02a50;">Mevcut Gardırobu</h5>
+                </div>
+                <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                    @if (Model.UserWardrobes != null && Model.UserWardrobes.Any())
+                    {
+                        @foreach (var wardrobe in Model.UserWardrobes)
+                        {
+                            <div class="d-flex align-items-center mb-3 p-2 border-bottom">
+                                <img src="@wardrobe.ClothingItem.ImageUrl" width="60" class="rounded mr-3 shadow-sm" />
+                                <span class="small">@wardrobe.ClothingItem.Name</span>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-center text-muted">Henüz kıyafeti yok. ☹</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0" style="border-radius: 20px;">
+                <div class="card-header bg-white border-0 pt-4 text-center">
+                    <h5 style="color: #ff1493;">🎁 Kıyafet Gönder</h5>
+                    <p class="small text-muted">Üzerine basarak anında hediye edebilirsin!</p>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @if (ViewBag.AllClothingItems != null)
+                        {
+                            @foreach (var item in (List<WebFashionDesignerGirl.Models.ClothingItem>)ViewBag.AllClothingItems)
+                            {
+                                <div class="col-md-4 mb-4">
+                                    <div class="p-3 text-center border rounded shadow-hover" style="background-color: #fff9fa; border-color: #ffe4e1 !important;">
+                                        <img src="@item.ImageUrl" class="img-fluid mb-2" style="height: 100px; object-fit: contain;" />
+                                        <p class="small font-weight-bold mb-2">@item.Name</p>
+
+                                        <form asp-action="GiftItem" method="post">
+                                            <input type="hidden" name="userId" value="@Model.Id" />
+                                            <input type="hidden" name="itemId" value="@item.Id" />
+                                            <button type="submit" class="btn btn-sm w-100" style="background-color: #ffb6c1; color: #d02a50; border-radius: 10px;">
+                                                Hediye Et ✨
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .shadow-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(255,182,193,0.4);
+        transition: 0.3s;
+    }
+    /* Gardırop listesindeki scroll çubuğunu güzelleştirelim */
+    ::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #ffb6c1;
+        border-radius: 10px;
+    }
+</style>

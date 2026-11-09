@@ -1,0 +1,258 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>FashionGirl - Giriş Yap</title>
+    <style>
+        :root {
+            --dark-choc: #443025;
+            --sakura: #EC9C9D;
+            --blush: #F9E8E8;
+            --text-gray: #8E8E8E;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            flex: 1;
+            background-color: var(--dark-choc);
+            color: white;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+            .left-panel h1 {
+                font-size: 40px;
+                margin-bottom: 40px;
+            }
+
+        .feature-item {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .right-panel {
+            flex: 1.2;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .login-form {
+            width: 100%;
+            max-width: 400px;
+        }
+
+            .login-form h2 {
+                color: var(--dark-choc);
+                font-size: 32px;
+                margin-bottom: 10px;
+            }
+
+        .tab-menu {
+            display: flex;
+            background: #F5F5F5;
+            border-radius: 50px;
+            margin-bottom: 30px;
+        }
+
+            .tab-menu button {
+                flex: 1;
+                padding: 12px;
+                border: none;
+                border-radius: 50px;
+                cursor: pointer;
+                font-weight: 600;
+                background: transparent;
+                color: var(--text-gray);
+            }
+
+            .tab-menu .active {
+                background: var(--dark-choc);
+                color: white;
+            }
+
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+            .input-group label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 600;
+                color: var(--dark-choc);
+            }
+
+            .input-group input {
+                width: 100%;
+                padding: 15px;
+                border-radius: 12px;
+                border: 1px solid #EAEAEA;
+                box-sizing: border-box;
+                background: #FDFDFD;
+            }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: var(--dark-choc);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        #suggestionText {
+            display: block;
+            margin-top: 5px;
+            font-size: 12px;
+            color: var(--sakura);
+            font-weight: 500;
+        }
+
+        .error-msg {
+            color: #d9534f;
+            font-size: 14px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="left-panel">
+        <div>
+            <h1>Fashion<i>Girl</i></h1>
+            <p style="color: var(--sakura);">✦ DİJİTAL KAPSÜL DOLAP</p>
+            <h2 style="font-size: 48px; line-height: 1.2;">Stilini keşfet, dünyaya sergile.</h2>
+            <p style="color: #ccc;">Kombinlerini oluştur, puan kazan ve kendi stil portfolyonla öne çık.</p>
+        </div>
+        <div class="features">
+            <div class="feature-item">🎨 <b>Kombin Stüdyosu</b></div>
+            <div class="feature-item">🏆 <b>Stil Puanları</b></div>
+            <div class="feature-item">🌸 <b>Topluluk</b></div>
+        </div>
+        <p style="font-size: 12px; opacity: 0.5;">© 2026 FashionGirl. Tüm hakları saklıdır.</p>
+    </div>
+
+    <div class="right-panel">
+        <div class="login-form">
+            <p style="color: var(--sakura); font-weight: 600; margin-bottom: 5px;">✦ MODA DÜNYASINA KATIL</p>
+            <h2 id="form-title">Giriş Yap, Tasarla.</h2>
+
+            @if (ViewBag.Error != null)
+            {
+                <p class="error-msg">@ViewBag.Error</p>
+            }
+
+            <div class="tab-menu">
+                <button id="tab-login" class="active" onclick="showForm('login')">Giriş Yap</button>
+                <button id="tab-register" onclick="showForm('register')">Kayıt Ol</button>
+            </div>
+
+            <form id="login-fields" action="/Account/Login" method="post" autocomplete="off">
+                <div class="input-group">
+                    <label>E-posta Adresi</label>
+                    <input type="email" name="Email" placeholder="" required autocomplete="one-time-code">
+                </div>
+                <div class="input-group">
+                    <label>Şifre</label>
+                    <input type="password" name="Password" placeholder="" required autocomplete="new-password">
+                </div>
+                <button type="submit" class="btn-submit">Giriş Yap →</button>
+            </form>
+
+            <form id="register-fields" action="/Account/Register" method="post" style="display: none;" autocomplete="off">
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <div class="input-group" style="flex: 1;">
+                        <label>İsim</label>
+                        <input type="text" id="RegName" name="Name" placeholder="" required oninput="generateSuggestion()">
+                    </div>
+                    <div class="input-group" style="flex: 1;">
+                        <label>Soyisim</label>
+                        <input type="text" id="RegSurname" name="Surname" placeholder="" required oninput="generateSuggestion()">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Yaş</label>
+                    <input type="number" name="Age" placeholder="" required>
+                </div>
+                <div class="input-group">
+                    <label>Moda Adınız (Benzersiz ✨)</label>
+                    <input type="text" id="ModaAdiInput" name="ModaAdi" placeholder="örn: moda_ikonu" required autocomplete="off">
+                    <small id="suggestionText"></small>
+                </div>
+                <div class="input-group">
+                    <label>E-posta Adresi</label>
+                    <input type="email" name="Email" placeholder="" required autocomplete="off">
+                </div>
+                <div class="input-group">
+                    <label>Şifre</label>
+                    <input type="password" name="Password" placeholder="" required autocomplete="new-password">
+                </div>
+                <button type="submit" class="btn-submit">Ücretsiz Kayıt Ol ✨</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function showForm(type) {
+            const loginFields = document.getElementById('login-fields');
+            const regFields = document.getElementById('register-fields');
+            const loginTab = document.getElementById('tab-login');
+            const regTab = document.getElementById('tab-register');
+            const title = document.getElementById('form-title');
+
+            if (type === 'register') {
+                loginFields.style.display = 'none';
+                regFields.style.display = 'block';
+                loginTab.classList.remove('active');
+                regTab.classList.add('active');
+                title.innerText = "Yeni Bir Hesap Oluştur.";
+            } else {
+                loginFields.style.display = 'block';
+                regFields.style.display = 'none';
+                loginTab.classList.add('active');
+                regTab.classList.remove('active');
+                title.innerText = "Giriş Yap, Tasarla.";
+            }
+        }
+
+        function generateSuggestion() {
+            const name = document.getElementById('RegName').value.trim().toLowerCase();
+            const surname = document.getElementById('RegSurname').value.trim().toLowerCase();
+            const suggestionText = document.getElementById('suggestionText');
+            const modaInput = document.getElementById('ModaAdiInput');
+
+            if (name !== "" && surname !== "") {
+                const cleanName = name.replace(/[^a-z0-9]/g, '');
+                const cleanSurname = surname.replace(/[^a-z0-9]/g, '');
+                const suggestion = cleanName + "_" + cleanSurname + Math.floor(Math.random() * 100);
+                suggestionText.innerText = "Öneri: " + suggestion;
+            } else {
+                suggestionText.innerText = "";
+            }
+        }
+    </script>
+</body>
+</html>

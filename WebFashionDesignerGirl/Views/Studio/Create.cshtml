@@ -1,0 +1,957 @@
+﻿@model IEnumerable<WebFashionDesignerGirl.Models.UserWardrobe>
+@using Microsoft.AspNetCore.Http
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Kombin Oluştur";
+    var userId = Context.Session.GetInt32("UserId");
+}
+
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+<!-- ══════════════════ HERO ══════════════════ -->
+<section class="st-hero">
+    <span class="st-tag">✦ Kombin Stüdyo</span>
+    <h1 class="st-title">Kombinini<em>Oluştur</em></h1>
+    <p class="st-sub">Gardırobundaki parçaları seç, kombinine isim ver ve topluluğunla paylaş.</p>
+</section>
+
+<div class="st-wrapper">
+
+    <!-- ══════════════════ SOL: GARDIROB ══════════════════ -->
+    <aside class="st-sidebar">
+        <div class="st-sidebar-header">
+            <h2 class="st-sidebar-title">Gardırobun</h2>
+            <span class="st-item-count" id="selectedCount">0 parça seçildi</span>
+        </div>
+
+        <!-- Kategori Filtreleri -->
+        <div class="st-cat-filters">
+            <button class="st-cat-btn active" data-cat="all">Tümü</button>
+            <button class="st-cat-btn" data-cat="Üst Giyim">Üst</button>
+            <button class="st-cat-btn" data-cat="Alt Giyim">Alt</button>
+            <button class="st-cat-btn" data-cat="Dış Giyim">Dış</button>
+            <button class="st-cat-btn" data-cat="Aksesuar">Aksesuar</button>
+            <button class="st-cat-btn" data-cat="Ayakkabı">Ayakkabı</button>
+            <button class="st-cat-btn" data-cat="Çanta">Çanta</button>
+        </div>
+
+        <!-- Kıyafet Listesi -->
+        <div class="st-wardrobe-grid" id="wardrobeGrid">
+            @if (Model != null && Model.Any())
+            {
+                @foreach (var w in Model)
+                {
+                    <div class="st-cloth-item"
+                         data-id="@w.ClothingItemId"
+                         data-cat="@w.ClothingItem.MainCategory"
+                         onclick="toggleSelect(this)">
+                        <div class="st-cloth-img-wrap">
+                            <img src="@w.ClothingItem.ImageUrl"
+                                 alt="@w.ClothingItem.Name"
+                                 onerror="this.src='/images/default-outfit.jpg'" />
+                            <div class="st-cloth-check">✓</div>
+                        </div>
+                        <p class="st-cloth-name">@w.ClothingItem.Name</p>
+                        <p class="st-cloth-sub">@w.ClothingItem.SubCategory</p>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="st-empty">
+                    <div class="st-empty-icon">👗</div>
+                    <p>Gardırobun boş!</p>
+                    <small>Admin sana kıyafet ekleyince burada görünür.</small>
+                </div>
+            }
+        </div>
+    </aside>
+
+    <!-- ══════════════════ SAĞ: KOMBİN PANELİ ══════════════════ -->
+    <main class="st-main">
+
+        <!-- Seçilen Parçalar Önizleme -->
+        <div class="st-preview-panel">
+            <h2 class="st-panel-title">Seçilen Parçalar</h2>
+            <div class="st-selected-grid" id="selectedGrid">
+                <div class="st-selected-empty" id="emptyMsg">
+                    <span>👆</span>
+                    <p>Soldan kıyafet seçmeye başla</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kombin Bilgileri Formu -->
+        <div class="st-form-panel">
+            <h2 class="st-panel-title">Kombin Detayları</h2>
+
+            <form id="outfitForm" onsubmit="submitOutfit(event)">
+                <input type="hidden" id="selectedItemsInput" name="SelectedItems" />
+
+                <div class="st-form-group">
+                    <label class="st-label">Kombin Adı <span class="st-required">*</span></label>
+                    <input type="text" id="lookName" name="LookName"
+                           placeholder="Örn: Bahar Sabahı, Ofis Chic..."
+                           class="st-input" maxlength="60" required />
+                </div>
+
+                <div class="st-form-group">
+                    <label class="st-label">Açıklama</label>
+                    <textarea id="description" name="Description"
+                              placeholder="Bu kombinle ilgili bir şeyler yaz..."
+                              class="st-textarea" rows="3" maxlength="300"></textarea>
+                </div>
+
+                <div class="st-form-row">
+                    <div class="st-form-group">
+                        <label class="st-label">Kategori</label>
+                        <select id="category" name="Category" class="st-input">
+                            <option value="">Seç...</option>
+                            <option value="casual">Casual</option>
+                            <option value="elegant">Elegant</option>
+                            <option value="streetwear">Streetwear</option>
+                            <option value="minimal">Minimal</option>
+                        </select>
+                    </div>
+                    <div class="st-form-group">
+                        <label class="st-label">Görsel URL <span style="color:var(--milktea);font-size:10px">(opsiyonel)</span></label>
+                        <input type="text" id="imageUrl" name="ImageUrl"
+                               placeholder="https://..." class="st-input" />
+                    </div>
+                </div>
+
+                <!-- Seçim Özeti -->
+                <div class="st-summary" id="selSummary">
+                    <div class="st-summary-item">
+                        <span class="st-summary-num" id="sumCount">0</span>
+                        <span class="st-summary-label">Parça</span>
+                    </div>
+                    <div class="st-summary-divider"></div>
+                    <div class="st-summary-item">
+                        <span class="st-summary-num" id="sumPoints">0</span>
+                        <span class="st-summary-label">Puan Değeri</span>
+                    </div>
+                    <div class="st-summary-divider"></div>
+                    <div class="st-summary-item">
+                        <span class="st-summary-num" id="sumCats">0</span>
+                        <span class="st-summary-label">Kategori</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="st-submit-btn" id="submitBtn" disabled>
+                    Kombini Paylaş ✦
+                </button>
+
+                <p class="st-hint">En az 1 parça seçmelisin.</p>
+            </form>
+        </div>
+    </main>
+</div>
+
+<!-- ══════════════════ BAŞARI MODAL ══════════════════ -->
+<div class="st-backdrop" id="successBackdrop"></div>
+<div class="st-success-modal" id="successModal">
+    <div class="st-success-icon">🎀</div>
+    <h2>Kombin Paylaşıldı!</h2>
+    <p>Kombinin başarıyla yayınlandı. Lookbook galerisinde görünecek!</p>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:1.5rem">
+        <a href="/Lookbook/Index" class="st-btn-primary">Galeriye Git ✦</a>
+        <button onclick="resetForm()" class="st-btn-ghost">Yeni Kombin</button>
+    </div>
+</div>
+
+<style>
+    :root {
+        --chocolate: #443025;
+        --aloewood: #7F5836;
+        --milktea: #AA7F66;
+        --sakura: #EC9C9D;
+        --blush: #F7E9EC;
+        --cream: #FAF4F0;
+    }
+
+    /* ── Hero ─────────────────────────────── */
+    .st-hero {
+        text-align: center;
+        padding: 3rem 2rem 2rem;
+        background: linear-gradient(180deg, var(--blush) 0%, var(--cream) 100%);
+        border-bottom: 1px solid rgba(236,156,157,0.15);
+    }
+
+    .st-tag {
+        font-size: 10px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--milktea);
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .st-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: clamp(2.4rem, 5vw, 4rem);
+        font-weight: 600;
+        color: var(--chocolate);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        line-height: 1;
+        margin: 0 0 6px;
+    }
+
+        .st-title em {
+            font-style: italic;
+            color: var(--sakura);
+            font-weight: 300;
+        }
+
+    .st-sub {
+        font-size: 0.88rem;
+        color: var(--aloewood);
+        font-weight: 300;
+    }
+
+    /* ── Layout ───────────────────────────── */
+    .st-wrapper {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        min-height: calc(100vh - 220px);
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    /* ── Sidebar ──────────────────────────── */
+    .st-sidebar {
+        background: #fff;
+        border-right: 1px solid rgba(236,156,157,0.18);
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 220px);
+        position: sticky;
+        top: 148px;
+        overflow: hidden;
+    }
+
+    .st-sidebar-header {
+        padding: 1.25rem 1.25rem 0.75rem;
+        border-bottom: 1px solid rgba(236,156,157,0.15);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .st-sidebar-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--chocolate);
+        margin: 0;
+    }
+
+    .st-item-count {
+        font-size: 11px;
+        color: var(--sakura);
+        font-weight: 500;
+    }
+
+    /* Kategori filtreleri */
+    .st-cat-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid rgba(236,156,157,0.12);
+        flex-shrink: 0;
+    }
+
+    .st-cat-btn {
+        background: transparent;
+        border: 1px solid rgba(236,156,157,0.3);
+        color: var(--aloewood);
+        font-size: 10px;
+        font-weight: 500;
+        padding: 4px 12px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        transition: all 0.2s;
+    }
+
+        .st-cat-btn:hover {
+            border-color: var(--sakura);
+            color: var(--chocolate);
+        }
+
+        .st-cat-btn.active {
+            background: var(--chocolate);
+            color: var(--cream);
+            border-color: var(--chocolate);
+        }
+
+    /* Kıyafet grid */
+    .st-wardrobe-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        padding: 0.75rem 1rem;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+        .st-wardrobe-grid::-webkit-scrollbar {
+            width: 3px;
+        }
+
+        .st-wardrobe-grid::-webkit-scrollbar-thumb {
+            background: rgba(236,156,157,0.4);
+            border-radius: 2px;
+        }
+
+    .st-cloth-item {
+        cursor: pointer;
+        border-radius: 10px;
+        border: 1.5px solid rgba(236,156,157,0.2);
+        overflow: hidden;
+        transition: all 0.2s;
+        background: var(--cream);
+    }
+
+        .st-cloth-item:hover {
+            border-color: var(--sakura);
+            transform: translateY(-2px);
+        }
+
+        .st-cloth-item.selected {
+            border-color: var(--chocolate);
+            background: var(--blush);
+        }
+
+    .st-cloth-img-wrap {
+        position: relative;
+        aspect-ratio: 3/4;
+        overflow: hidden;
+    }
+
+        .st-cloth-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .st-cloth-check {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: var(--chocolate);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 700;
+        display: none;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .st-cloth-item.selected .st-cloth-check {
+        display: flex;
+    }
+
+    .st-cloth-name {
+        font-size: 9px;
+        font-weight: 500;
+        color: var(--chocolate);
+        padding: 4px 5px 0;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .st-cloth-sub {
+        font-size: 8px;
+        color: var(--milktea);
+        padding: 0 5px 5px;
+        margin: 0;
+    }
+
+    /* Boş */
+    .st-empty {
+        grid-column: 1/-1;
+        text-align: center;
+        padding: 2rem 1rem;
+        color: var(--milktea);
+    }
+
+    .st-empty-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .st-empty p {
+        font-size: 13px;
+        color: var(--aloewood);
+        margin: 0 0 4px;
+    }
+
+    .st-empty small {
+        font-size: 11px;
+        color: var(--milktea);
+    }
+
+    /* ── Main ─────────────────────────────── */
+    .st-main {
+        padding: 1.5rem 2rem 4rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    /* Önizleme */
+    .st-preview-panel {
+        background: #fff;
+        border: 1px solid rgba(236,156,157,0.2);
+        border-radius: 18px;
+        padding: 1.25rem;
+    }
+
+    .st-panel-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--chocolate);
+        margin: 0 0 1rem;
+    }
+
+    .st-selected-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        min-height: 120px;
+        align-items: flex-start;
+    }
+
+    .st-selected-empty {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100px;
+        color: var(--milktea);
+        gap: 6px;
+        font-size: 13px;
+    }
+
+        .st-selected-empty span {
+            font-size: 1.8rem;
+        }
+
+    .st-selected-item {
+        position: relative;
+        width: 80px;
+        border: 1.5px solid rgba(236,156,157,0.3);
+        border-radius: 10px;
+        overflow: hidden;
+        background: var(--cream);
+    }
+
+        .st-selected-item img {
+            width: 100%;
+            aspect-ratio: 3/4;
+            object-fit: cover;
+            display: block;
+        }
+
+    .st-selected-remove {
+        position: absolute;
+        top: 3px;
+        right: 3px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: rgba(68,48,37,0.75);
+        color: #fff;
+        border: none;
+        font-size: 9px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .st-selected-label {
+        font-size: 8px;
+        color: var(--aloewood);
+        padding: 3px 4px;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Form */
+    .st-form-panel {
+        background: #fff;
+        border: 1px solid rgba(236,156,157,0.2);
+        border-radius: 18px;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .st-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        margin-bottom: 1rem;
+    }
+
+    .st-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .st-label {
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--milktea);
+    }
+
+    .st-required {
+        color: var(--sakura);
+    }
+
+    .st-input, .st-textarea {
+        border: 1px solid rgba(236,156,157,0.3);
+        border-radius: 10px;
+        padding: 9px 13px;
+        font-size: 13px;
+        font-family: 'DM Sans', sans-serif;
+        color: var(--chocolate);
+        background: var(--cream);
+        outline: none;
+        transition: border-color 0.2s;
+        width: 100%;
+    }
+
+        .st-input:focus, .st-textarea:focus {
+            border-color: var(--sakura);
+            background: #fff;
+        }
+
+    .st-textarea {
+        resize: vertical;
+    }
+
+    /* Özet */
+    .st-summary {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        background: var(--blush);
+        border: 1px solid rgba(236,156,157,0.2);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .st-summary-item {
+        text-align: center;
+    }
+
+    .st-summary-num {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--chocolate);
+        display: block;
+        line-height: 1;
+    }
+
+    .st-summary-label {
+        font-size: 10px;
+        color: var(--milktea);
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .st-summary-divider {
+        width: 1px;
+        height: 36px;
+        background: rgba(236,156,157,0.3);
+    }
+
+    /* Submit */
+    .st-submit-btn {
+        width: 100%;
+        background: var(--chocolate);
+        color: var(--cream);
+        border: none;
+        padding: 13px;
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        transition: background 0.2s, opacity 0.2s;
+    }
+
+        .st-submit-btn:hover:not(:disabled) {
+            background: var(--aloewood);
+        }
+
+        .st-submit-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+    .st-hint {
+        text-align: center;
+        font-size: 11px;
+        color: var(--milktea);
+        margin: 8px 0 0;
+    }
+
+    /* ── Başarı Modal ─────────────────────── */
+    .st-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(44,28,18,0.55);
+        z-index: 2000;
+        backdrop-filter: blur(4px);
+    }
+
+        .st-backdrop.open {
+            display: block;
+        }
+
+    .st-success-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #fff;
+        border-radius: 20px;
+        padding: 2.5rem 2rem;
+        text-align: center;
+        z-index: 2001;
+        width: min(90vw, 420px);
+        box-shadow: 0 24px 60px rgba(68,48,37,0.18);
+    }
+
+        .st-success-modal.open {
+            display: block;
+        }
+
+    .st-success-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .st-success-modal h2 {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 1.6rem;
+        color: var(--chocolate);
+        margin-bottom: 0.5rem;
+    }
+
+    .st-success-modal p {
+        font-size: 13px;
+        color: var(--aloewood);
+        line-height: 1.6;
+    }
+
+    .st-btn-primary {
+        display: inline-block;
+        background: var(--chocolate);
+        color: var(--cream);
+        padding: 10px 22px;
+        border-radius: 50px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        transition: background 0.2s;
+    }
+
+        .st-btn-primary:hover {
+            background: var(--aloewood);
+            color: var(--cream);
+            text-decoration: none;
+        }
+
+    .st-btn-ghost {
+        background: transparent;
+        color: var(--aloewood);
+        border: 1px solid rgba(236,156,157,0.4);
+        padding: 9px 20px;
+        border-radius: 50px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        transition: all 0.2s;
+    }
+
+        .st-btn-ghost:hover {
+            border-color: var(--sakura);
+            color: var(--chocolate);
+        }
+
+    @@media (max-width: 900px) {
+        .st-wrapper {
+            grid-template-columns: 1fr;
+        }
+
+        .st-sidebar {
+            position: static;
+            height: auto;
+        }
+
+        .st-wardrobe-grid {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .st-main {
+            padding: 1rem 1rem 4rem;
+        }
+
+        .st-form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<script>
+    // Seçili kıyafetlerin id ve puan bilgilerini tutacak map
+    const selectedMap = new Map(); // id -> { name, imageUrl, points }
+
+    // Kıyafet bilgilerini Razor'dan JS'e aktar
+    const pointValues = {
+        @if (Model != null)
+        {
+                @foreach (var w in Model)
+                {
+                        @:  "@w.ClothingItemId": { name: "@Html.Raw((w.ClothingItem.Name ?? "").Replace("\"", ""))", imageUrl: "@Html.Raw((w.ClothingItem.ImageUrl ?? "").Replace("\"", ""))", points: @w.ClothingItem.PointValue },
+                }
+        }
+    };
+
+    /* ── Seç / Kaldır ─────────────────────── */
+    function toggleSelect(el) {
+        const id  = el.dataset.id;
+        const info = pointValues[id];
+
+        if (selectedMap.has(id)) {
+            selectedMap.delete(id);
+            el.classList.remove('selected');
+        } else {
+            selectedMap.set(id, info);
+            el.classList.add('selected');
+        }
+        updatePreview();
+    }
+
+    /* ── Önizlemeyi Güncelle ──────────────── */
+    function updatePreview() {
+        const grid    = document.getElementById('selectedGrid');
+        const emptyMsg = document.getElementById('emptyMsg');
+        const count   = selectedMap.size;
+
+        // Sayaçlar
+        document.getElementById('selectedCount').textContent = count + ' parça seçildi';
+        document.getElementById('sumCount').textContent  = count;
+
+        let totalPts = 0;
+        const cats   = new Set();
+        selectedMap.forEach((info, id) => {
+            totalPts += (info?.points || 0);
+        });
+
+        document.getElementById('sumPoints').textContent = totalPts;
+        document.getElementById('sumCats').textContent   = selectedMap.size > 0 ? Math.ceil(selectedMap.size / 2) : 0;
+
+        // Submit butonu
+        document.getElementById('submitBtn').disabled = count === 0;
+        document.querySelector('.st-hint').style.display = count === 0 ? 'block' : 'none';
+
+        // Önizleme grid
+        grid.innerHTML = '';
+
+        if (count === 0) {
+            const em = document.getElementById('emptyMsg');
+            if (em) { grid.appendChild(em); }
+            else {
+                grid.innerHTML = '<div class="st-selected-empty"><span>👆</span><p>Soldan kıyafet seçmeye başla</p></div>';
+            }
+            return;
+        }
+
+        selectedMap.forEach((info, id) => {
+            const div = document.createElement('div');
+            div.className = 'st-selected-item';
+            div.innerHTML = `
+                <img src="${info?.imageUrl || '/images/default-outfit.jpg'}" onerror="this.src='/images/default-outfit.jpg'" />
+                <button class="st-selected-remove" onclick="removeItem('${id}')">✕</button>
+                <p class="st-selected-label">${info?.name || ''}</p>
+            `;
+            grid.appendChild(div);
+        });
+
+        // Hidden input güncelle
+        document.getElementById('selectedItemsInput').value = Array.from(selectedMap.keys()).join(',');
+    }
+
+    /* ── Önizlemeden Kaldır ───────────────── */
+    function removeItem(id) {
+        selectedMap.delete(id);
+        // Sidebar'daki kartı da deselect et
+        document.querySelectorAll('.st-cloth-item').forEach(el => {
+            if (el.dataset.id === id) el.classList.remove('selected');
+        });
+        updatePreview();
+    }
+
+    /* ── Kategori Filtre ──────────────────── */
+    document.querySelectorAll('.st-cat-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            document.querySelectorAll('.st-cat-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            const cat = this.dataset.cat;
+            document.querySelectorAll('.st-cloth-item').forEach(item => {
+                item.style.display = (cat === 'all' || item.dataset.cat === cat) ? '' : 'none';
+            });
+        });
+    });
+
+    /* ── Kıyafetleri Canvas ile Birleştir ─── */
+    async function mergeImages(imageUrls) {
+        return new Promise((resolve) => {
+            const cols = Math.ceil(Math.sqrt(imageUrls.length));
+            const rows = Math.ceil(imageUrls.length / cols);
+            const itemW = 300;
+            const itemH = 400;
+            const canvas = document.createElement('canvas');
+            canvas.width  = cols * itemW;
+            canvas.height = rows * itemH;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#FAF4F0';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            let loaded = 0;
+            imageUrls.forEach((url, i) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => {
+                    const col = i % cols;
+                    const row = Math.floor(i / cols);
+                    const x = col * itemW;
+                    const y = row * itemH;
+
+                    // Görseli orantılı olarak ortala
+                    const scale = Math.min(itemW / img.width, itemH / img.height);
+                    const w = img.width  * scale;
+                    const h = img.height * scale;
+                    const offsetX = x + (itemW - w) / 2;
+                    const offsetY = y + (itemH - h) / 2;
+
+                    ctx.drawImage(img, offsetX, offsetY, w, h);
+                    loaded++;
+                    if (loaded === imageUrls.length) {
+                        resolve(canvas.toDataURL('image/jpeg', 0.85));
+                    }
+                };
+                img.onerror = () => {
+                    loaded++;
+                    if (loaded === imageUrls.length) {
+                        resolve(canvas.toDataURL('image/jpeg', 0.85));
+                    }
+                };
+                img.src = url;
+            });
+        });
+    }
+
+    /* ── Form Gönder ──────────────────────── */
+    async function submitOutfit(e) {
+        e.preventDefault();
+
+        const ids = Array.from(selectedMap.keys()).join(',');
+        if (!ids) { alert('En az 1 parça seçmelisin!'); return; }
+
+        const btn = document.getElementById('submitBtn');
+        btn.disabled = true;
+        btn.textContent = 'Görsel oluşturuluyor...';
+
+        // Seçilen kıyafetlerin URL'lerini topla
+        const imageUrls = Array.from(selectedMap.values()).map(v => v?.imageUrl).filter(Boolean);
+
+        // Canvas ile birleştir
+        let mergedImageUrl = '';
+        if (imageUrls.length > 0) {
+            try {
+                const dataUrl = await mergeImages(imageUrls);
+                // Base64'ü sunucuya gönder, sunucu dosyaya kaydedecek
+                const uploadResp = await fetch('/Studio/UploadImage', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ imageData: dataUrl })
+                });
+                const uploadRes = await uploadResp.json();
+                if (uploadRes.success) {
+                    mergedImageUrl = uploadRes.imageUrl;
+                }
+            } catch (err) {
+                console.log('Görsel birleştirme hatası:', err);
+            }
+        }
+
+        btn.textContent = 'Paylaşılıyor...';
+
+        const payload = {
+            lookName:      document.getElementById('lookName').value,
+            description:   document.getElementById('description').value,
+            category:      document.getElementById('category').value,
+            imageUrl:      mergedImageUrl,
+            selectedItems: ids
+        };
+
+        try {
+            const resp = await fetch('/Studio/Create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const res = await resp.json();
+
+            if (res.success) {
+                document.getElementById('successBackdrop').classList.add('open');
+                document.getElementById('successModal').classList.add('open');
+            } else {
+                alert(res.message || 'Bir hata oluştu.');
+                btn.disabled = false;
+                btn.textContent = 'Kombini Paylaş ✦';
+            }
+        } catch {
+            alert('Bağlantı hatası, tekrar dene.');
+            btn.disabled = false;
+            btn.textContent = 'Kombini Paylaş ✦';
+        }
+    }
+
+    /* ── Formu Sıfırla ────────────────────── */
+    function resetForm() {
+        selectedMap.clear();
+        document.querySelectorAll('.st-cloth-item').forEach(el => el.classList.remove('selected'));
+        document.getElementById('outfitForm').reset();
+        updatePreview();
+        document.getElementById('successBackdrop').classList.remove('open');
+        document.getElementById('successModal').classList.remove('open');
+    }
+</script>

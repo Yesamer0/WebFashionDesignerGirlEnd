@@ -1,0 +1,808 @@
+﻿@using Microsoft.AspNetCore.Http
+@{
+    Layout = "_Layout";
+    var userId = Context.Session.GetInt32("UserId");
+}
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-follower" id="cursorFollower"></div>
+
+<!-- ═══════════════════════════════════════════ HERO ═══════════════════════════════════════════ -->
+<section class="hero">
+    <div class="hero-content">
+        <span class="badge reveal">✦ New Collection 2025</span>
+        <h1 class="reveal">
+            Tarzını <span class="italic-pink">Dijitalde</span><br>
+            Yeniden Tanımla.
+        </h1>
+        <p class="hero-sub reveal">
+            Moda tutkunu topluluğuna katıl, kendi kapsül gardırobunu oluştur<br>
+            ve stil puanlarını topla.
+        </p>
+        <div class="cta-btns reveal">
+            @if (userId == null)
+            {
+                <a href="/Account/Login" class="btn-primary">Hemen Başla ✦</a>
+            }
+            else
+            {
+                <a href="/Account/Profile" class="btn-primary">Gardırobuna Git ✦</a>
+            }
+            <a href="#explore" class="btn-secondary">Lookbook'ları Keşfet →</a>
+        </div>
+    </div>
+
+    <div class="hero-visual reveal">
+        <div class="main-card">
+            <div class="card-inner">
+                <div class="card-label">Stil Portfolyon</div>
+                <div class="outfit-grid">
+                    <div class="outfit-item oi-1"></div>
+                    <div class="outfit-item oi-2"></div>
+                    <div class="outfit-item oi-3"></div>
+                    <div class="outfit-item oi-4"></div>
+                </div>
+                <div class="card-stat">
+                    <span class="stat-num">248</span>
+                    <span class="stat-label">Stil Puanı</span>
+                </div>
+            </div>
+        </div>
+        <div class="floating-pill pill-1">✦ Onaylandı</div>
+        <div class="floating-pill pill-2">🎀 Trend</div>
+        <div class="floating-pill pill-3">+12 Puan</div>
+        <div class="orbit-ring"></div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════ FEATURES ══════════════════════════════════════════ -->
+<section class="features" id="explore">
+    <div class="section-header reveal">
+        <span class="section-tag">Neler Yapabilirsin?</span>
+        <h2>Dijital Moda<br><em>Deneyimi</em></h2>
+    </div>
+    <div class="features-grid">
+        <div class="feature-card reveal fc-1">
+            <div class="fc-icon">🗂️</div>
+            <h3>Dijital Dolap</h3>
+            <p>Kıyafetlerini sisteme ekle, kategorize et ve estetik bir dijital gardırop oluştur.</p>
+        </div>
+        <div class="feature-card reveal fc-2">
+            <div class="fc-icon">✂️</div>
+            <h3>Kombin Stüdyo</h3>
+            <p>Parçalarını birleştir, özgün Lookbook'lar tasarla ve admin onayına gönder.</p>
+        </div>
+        <div class="feature-card reveal fc-3">
+            <div class="fc-icon">⭐</div>
+            <h3>Stil Puanları</h3>
+            <p>Onaylanan kombinlerinden puan kazan, yeni dijital parçaların kilidini aç.</p>
+        </div>
+        <div class="feature-card reveal fc-4">
+            <div class="fc-icon">💗</div>
+            <h3>Topluluk</h3>
+            <p>Diğer tasarımcıların lookbook'larını keşfet, ilham al ve etkileşimde bulun.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════ HOW IT WORKS ═══════════════════════════════════════ -->
+<section class="how-it-works">
+    <div class="section-header reveal">
+        <span class="section-tag">Nasıl Çalışır?</span>
+        <h2>Üç Adımda<br><em>Başla</em></h2>
+    </div>
+    <div class="steps">
+        <div class="step reveal">
+            <div class="step-num">01</div>
+            <div class="step-content">
+                <h3>Kayıt Ol</h3>
+                <p>Saniyeler içinde hesabını oluştur, temel kapsül parçalarını al.</p>
+            </div>
+        </div>
+        <div class="step-divider">→</div>
+        <div class="step reveal">
+            <div class="step-num">02</div>
+            <div class="step-content">
+                <h3>Kombini Tasarla</h3>
+                <p>Dijital parçalarını birleştir, kendi Lookbook'unu oluştur.</p>
+            </div>
+        </div>
+        <div class="step-divider">→</div>
+        <div class="step reveal">
+            <div class="step-num">03</div>
+            <div class="step-content">
+                <h3>Puan Kazan</h3>
+                <p>Onaylanan kombinlerinden puan kazan, yeni içeriklere eriş.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════ CTA SECTION ═══════════════════════════════════════ -->
+<section class="quote-section">
+    <div class="qs-blob"></div>
+    <div class="qs-content">
+        <span class="section-tag reveal">Topluluğumuza Katıl</span>
+        <h2 class="reveal">
+            Dijital dolabını<br>
+            <em>bugün oluştur.</em>
+        </h2>
+        <p class="reveal">
+            Binlerce moda tasarımcısına katıl.<br>
+            Stilini keşfet, kombinlerini paylaş, topluluğunda ilham ol.
+        </p>
+        <div class="cta-btns reveal">
+            <a href="/Account/Login" class="btn-primary">Ücretsiz Başla ✦</a>
+            <a href="#explore" class="btn-secondary">Daha Fazla →</a>
+        </div>
+        <div class="stats-row reveal">
+            <div class="stat-pill">
+                <strong>2.4K+</strong>
+                <span>Tasarımcı</span>
+            </div>
+            <div class="stat-pill">
+                <strong>18K+</strong>
+                <span>Kombini</span>
+            </div>
+            <div class="stat-pill">
+                <strong>95%</strong>
+                <span>Memnuniyet</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════════════ STYLES ══════════════════════════════════════════ -->
+<style>
+    @@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap');
+
+    :root {
+        --chocolate: #443025;
+        --aloewood: #7F5836;
+        --milktea: #AA7F66;
+        --sakura: #EC9C9D;
+        --mistyrose: #F2CF2A; /* kept from palette — used sparingly */
+        --blush: #F7E9EC;
+        --cream: #FAF4F0;
+        --white: #ffffff;
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        background: var(--cream);
+        color: var(--chocolate);
+        font-family: 'DM Sans', sans-serif;
+        cursor: none;
+        overflow-x: hidden;
+    }
+
+    /* ── Custom Cursor ─────────────────────────────────────────── */
+    .cursor {
+        width: 10px;
+        height: 10px;
+        background: var(--sakura);
+        border-radius: 50%;
+        position: fixed;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(-50%, -50%);
+        transition: width 0.2s, height 0.2s;
+    }
+
+    .cursor-follower {
+        width: 36px;
+        height: 36px;
+        border: 1.5px solid var(--sakura);
+        border-radius: 50%;
+        position: fixed;
+        pointer-events: none;
+        z-index: 9998;
+        transform: translate(-50%, -50%);
+        transition: left 0.1s ease-out, top 0.1s ease-out, border-color 0.3s;
+    }
+
+    a:hover ~ .cursor, button:hover ~ .cursor {
+        width: 18px;
+        height: 18px;
+    }
+
+    /* ── Scroll Reveal ─────────────────────────────────────────── */
+    .reveal {
+        opacity: 0;
+        transform: translateY(32px);
+        transition: opacity 0.85s ease-out, transform 0.85s ease-out;
+    }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+    /* ── Shared ────────────────────────────────────────────────── */
+    .badge {
+        display: inline-block;
+        background: rgba(236,156,157,0.18);
+        color: var(--aloewood);
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 0.35rem 1rem;
+        border-radius: 50px;
+        border: 1px solid rgba(236,156,157,0.35);
+        margin-bottom: 1.5rem;
+    }
+
+    .btn-primary {
+        display: inline-block;
+        background: var(--chocolate);
+        color: var(--cream);
+        padding: 0.85rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+        letter-spacing: 0.02em;
+        transition: background 0.25s, transform 0.2s;
+    }
+
+        .btn-primary:hover {
+            background: var(--aloewood);
+            transform: translateY(-2px);
+        }
+
+    .btn-secondary {
+        display: inline-block;
+        color: var(--aloewood);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.9rem;
+        margin-left: 1.25rem;
+        border-bottom: 1.5px solid var(--sakura);
+        padding-bottom: 2px;
+        transition: color 0.2s;
+    }
+
+        .btn-secondary:hover {
+            color: var(--chocolate);
+        }
+
+    .cta-btns {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .section-tag {
+        display: inline-block;
+        font-size: 0.72rem;
+        font-weight: 500;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--milktea);
+        margin-bottom: 0.75rem;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 3.5rem;
+    }
+
+        .section-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.8rem;
+            line-height: 1.15;
+            color: var(--chocolate);
+        }
+
+            .section-header h2 em {
+                font-style: italic;
+                color: var(--sakura);
+            }
+
+    /* ── HERO ──────────────────────────────────────────────────── */
+    .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 7rem 8% 4rem;
+        gap: 3rem;
+        background: linear-gradient(135deg, var(--cream) 0%, var(--blush) 60%, #f5e5e6 100%);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -120px;
+            right: -120px;
+            width: 560px;
+            height: 560px;
+            background: radial-gradient(circle, rgba(236,156,157,0.18) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+    .hero-content {
+        max-width: 560px;
+    }
+
+        .hero-content h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3rem, 5vw, 5rem);
+            line-height: 1.08;
+            font-weight: 700;
+            color: var(--chocolate);
+            margin-bottom: 1.25rem;
+        }
+
+    .italic-pink {
+        color: var(--sakura);
+        font-style: italic;
+    }
+
+    .hero-sub {
+        font-size: 1rem;
+        font-weight: 300;
+        color: var(--aloewood);
+        line-height: 1.7;
+        margin-bottom: 2.25rem;
+    }
+
+    /* Hero Visual */
+    .hero-visual {
+        position: relative;
+        width: 380px;
+        height: 420px;
+        flex-shrink: 0;
+    }
+
+    .main-card {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 260px;
+        height: 300px;
+        background: var(--white);
+        border-radius: 24px;
+        border: 1px solid rgba(236,156,157,0.3);
+        box-shadow: 0 24px 64px rgba(68,48,37,0.1), 0 4px 16px rgba(236,156,157,0.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: card-float 4s ease-in-out infinite;
+    }
+
+    .card-inner {
+        padding: 1.5rem;
+        width: 100%;
+    }
+
+    .card-label {
+        font-size: 0.7rem;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--milktea);
+        margin-bottom: 1rem;
+    }
+
+    .outfit-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 1.25rem;
+    }
+
+    .outfit-item {
+        height: 72px;
+        border-radius: 10px;
+    }
+
+    .oi-1 {
+        background: linear-gradient(135deg, #f9dde0, #f2b8bb);
+    }
+
+    .oi-2 {
+        background: linear-gradient(135deg, #e8d5c4, #d4b49a);
+    }
+
+    .oi-3 {
+        background: linear-gradient(135deg, #f7e9ec, #ecc8cc);
+    }
+
+    .oi-4 {
+        background: linear-gradient(135deg, #c9a98a, #aa7f66);
+    }
+
+    .card-stat {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+        border-top: 1px solid rgba(236,156,157,0.2);
+        padding-top: 1rem;
+    }
+
+    .stat-num {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--chocolate);
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+        color: var(--milktea);
+        font-weight: 400;
+    }
+
+    .floating-pill {
+        position: absolute;
+        background: var(--white);
+        border: 1px solid rgba(236,156,157,0.35);
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 0.4rem 0.9rem;
+        color: var(--chocolate);
+        box-shadow: 0 8px 24px rgba(68,48,37,0.08);
+        white-space: nowrap;
+    }
+
+    .pill-1 {
+        top: 18px;
+        left: 0;
+        animation: pill-float 3.5s ease-in-out infinite;
+    }
+
+    .pill-2 {
+        top: 60px;
+        right: 0;
+        animation: pill-float 3.5s ease-in-out infinite 0.8s;
+    }
+
+    .pill-3 {
+        bottom: 55px;
+        left: 10px;
+        animation: pill-float 3.5s ease-in-out infinite 1.4s;
+    }
+
+    .orbit-ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 340px;
+        height: 340px;
+        border: 1px dashed rgba(236,156,157,0.3);
+        border-radius: 50%;
+        animation: spin 18s linear infinite;
+    }
+
+    @@keyframes card-float {
+        0%, 100%
+
+    {
+        transform: translate(-50%, -50%) translateY(0);
+    }
+
+    50% {
+        transform: translate(-50%, -50%) translateY(-12px);
+    }
+
+    }
+    @@keyframes pill-float {
+        0%, 100%
+
+    {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+
+    }
+    @@keyframes spin {
+        from
+
+    {
+        transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+
+    }
+
+    /* ── FEATURES ──────────────────────────────────────────────── */
+    .features {
+        padding: 7rem 8%;
+        background: var(--white);
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .feature-card {
+        background: var(--cream);
+        border: 1px solid rgba(236,156,157,0.2);
+        border-radius: 20px;
+        padding: 2rem 1.75rem;
+        transition: transform 0.3s, box-shadow 0.3s, border-color 0.3s;
+    }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 40px rgba(68,48,37,0.09);
+            border-color: var(--sakura);
+        }
+
+    .fc-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: var(--chocolate);
+        margin-bottom: 0.6rem;
+    }
+
+    .feature-card p {
+        font-size: 0.88rem;
+        color: var(--aloewood);
+        line-height: 1.65;
+    }
+
+    /* Staggered reveal delays */
+    .fc-1 {
+        transition-delay: 0s;
+    }
+
+    .fc-2 {
+        transition-delay: 0.1s;
+    }
+
+    .fc-3 {
+        transition-delay: 0.2s;
+    }
+
+    .fc-4 {
+        transition-delay: 0.3s;
+    }
+
+    /* ── HOW IT WORKS ──────────────────────────────────────────── */
+    .how-it-works {
+        padding: 7rem 8%;
+        background: var(--blush);
+    }
+
+    .steps {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    .step {
+        background: var(--white);
+        border: 1px solid rgba(236,156,157,0.25);
+        border-radius: 20px;
+        padding: 2rem 1.75rem;
+        flex: 1;
+        min-width: 200px;
+        max-width: 260px;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+        .step:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(68,48,37,0.08);
+        }
+
+    .step-num {
+        font-family: 'Playfair Display', serif;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: rgba(236,156,157,0.35);
+        line-height: 1;
+        margin-bottom: 0.75rem;
+    }
+
+    .step-content h3 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.1rem;
+        color: var(--chocolate);
+        margin-bottom: 0.5rem;
+    }
+
+    .step-content p {
+        font-size: 0.85rem;
+        color: var(--aloewood);
+        line-height: 1.6;
+    }
+
+    .step-divider {
+        font-size: 1.5rem;
+        color: var(--sakura);
+        font-weight: 300;
+        padding: 0 0.5rem;
+    }
+
+    /* ── QUOTE / CTA ───────────────────────────────────────────── */
+    .quote-section {
+        padding: 9rem 8%;
+        background: var(--white);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .qs-blob {
+        position: absolute;
+        top: -200px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 700px;
+        height: 700px;
+        background: radial-gradient(circle, rgba(236,156,157,0.1) 0%, transparent 65%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .qs-content {
+        position: relative;
+        z-index: 1;
+        max-width: 640px;
+        margin: 0 auto;
+    }
+
+        .qs-content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.2rem, 4vw, 3.5rem);
+            line-height: 1.15;
+            color: var(--chocolate);
+            margin-bottom: 1.25rem;
+        }
+
+            .qs-content h2 em {
+                font-style: italic;
+                color: var(--sakura);
+            }
+
+        .qs-content p {
+            font-size: 1rem;
+            font-weight: 300;
+            color: var(--aloewood);
+            line-height: 1.75;
+            margin-bottom: 2.25rem;
+        }
+
+        .qs-content .cta-btns {
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+    .stats-row {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .stat-pill {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: var(--cream);
+        border: 1px solid rgba(236,156,157,0.25);
+        border-radius: 16px;
+        padding: 1rem 1.75rem;
+    }
+
+        .stat-pill strong {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--chocolate);
+        }
+
+        .stat-pill span {
+            font-size: 0.75rem;
+            color: var(--milktea);
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+    /* ── Responsive ────────────────────────────────────────────── */
+    @@media (max-width: 900px) {
+        .hero {
+            flex-direction: column;
+            padding: 6rem 6% 4rem;
+            text-align: center;
+        }
+
+        .cta-btns {
+            justify-content: center;
+        }
+
+        .hero-visual {
+            width: 300px;
+            height: 340px;
+        }
+
+        .orbit-ring {
+            width: 280px;
+            height: 280px;
+        }
+
+        .step-divider {
+            display: none;
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .hero-content h1 {
+            font-size: 2.6rem;
+        }
+
+        .main-card {
+            width: 210px;
+            height: 250px;
+        }
+    }
+</style>
+
+<script>
+    /* ── Custom Cursor ─────────────────────────── */
+    const cursor   = document.getElementById('cursor');
+    const follower = document.getElementById('cursorFollower');
+
+    document.addEventListener('mousemove', e => {
+        cursor.style.left   = e.clientX + 'px';
+        cursor.style.top    = e.clientY + 'px';
+        setTimeout(() => {
+            follower.style.left = e.clientX + 'px';
+            follower.style.top  = e.clientY + 'px';
+        }, 80);
+    });
+
+    document.querySelectorAll('a, button').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            cursor.style.width  = '18px';
+            cursor.style.height = '18px';
+            follower.style.borderColor = '#443025';
+        });
+        el.addEventListener('mouseleave', () => {
+            cursor.style.width  = '10px';
+            cursor.style.height = '10px';
+            follower.style.borderColor = '#EC9C9D';
+        });
+    });
+
+    /* ── Scroll Reveal ─────────────────────────── */
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) entry.target.classList.add('active');
+        });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>

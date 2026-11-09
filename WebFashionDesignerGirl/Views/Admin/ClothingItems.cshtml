@@ -1,0 +1,776 @@
+﻿@model IEnumerable<WebFashionDesignerGirl.Models.ClothingItem>
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Kıyafet Kataloğu";
+}
+
+<!-- ══════════════════ HERO ══════════════════ -->
+<section class="ad-hero">
+    <div class="ad-hero-left">
+        <span class="ad-tag">✦ Admin Paneli</span>
+        <h1 class="ad-title">Kıyafet<em>Kataloğu</em></h1>
+        <p class="ad-sub">Sisteme yeni parçalar ekle, düzenle veya kaldır.</p>
+    </div>
+    <div class="ad-hero-right">
+        <button class="ad-btn-primary" onclick="openAddModal()">+ Yeni Kıyafet Ekle</button>
+        <a href="/Admin/Index" class="ad-btn-ghost">⬅ Üye Listesi</a>
+    </div>
+</section>
+
+<!-- ══════════════════ STATS ══════════════════ -->
+<div class="ad-stats-row">
+    <div class="ad-stat-card">
+        <span class="ad-stat-num">@Model.Count()</span>
+        <span class="ad-stat-label">Toplam Parça</span>
+    </div>
+    <div class="ad-stat-card">
+        <span class="ad-stat-num">@Model.Select(x => x.MainCategory).Distinct().Count()</span>
+        <span class="ad-stat-label">Kategori</span>
+    </div>
+    <div class="ad-stat-card">
+        <span class="ad-stat-num">@Model.Select(x => x.Color).Distinct().Count()</span>
+        <span class="ad-stat-label">Renk</span>
+    </div>
+    <div class="ad-stat-card">
+        <span class="ad-stat-num">@Model.Sum(x => x.PointValue)</span>
+        <span class="ad-stat-label">Toplam Puan Değeri</span>
+    </div>
+</div>
+
+<!-- ══════════════════ FİLTRE + ARAMA ══════════════════ -->
+<div class="ad-toolbar">
+    <input type="text" id="searchInput" onkeyup="filterItems()"
+           placeholder="Kıyafet adı, renk veya kategori ara..."
+           class="ad-search" />
+    <div class="ad-filter-group">
+        <select id="catFilter" onchange="filterItems()" class="ad-select">
+            <option value="">Tüm Kategoriler</option>
+            @foreach (var cat in Model.Select(x => x.MainCategory).Distinct().OrderBy(x => x))
+            {
+                <option value="@cat">@cat</option>
+            }
+        </select>
+        <select id="seasonFilter" onchange="filterItems()" class="ad-select">
+            <option value="">Tüm Mevsimler</option>
+            @foreach (var s in Model.Select(x => x.Season).Distinct().OrderBy(x => x))
+            {
+                <option value="@s">@s</option>
+            }
+        </select>
+    </div>
+</div>
+
+<!-- ══════════════════ GRID ══════════════════ -->
+<div class="ad-container">
+    <div class="ad-grid" id="itemGrid">
+        @foreach (var item in Model)
+        {
+            <div class="ad-item-card"
+                 data-name="@item.Name.ToLower()"
+                 data-cat="@item.MainCategory"
+                 data-season="@item.Season"
+                 data-color="@item.Color">
+
+                <div class="ad-item-img-wrap">
+                    <img src="@item.ImageUrl" alt="@item.Name"
+                         onerror="this.src='/images/default-outfit.jpg'" />
+                    <div class="ad-item-overlay">
+                        <button class="ad-overlay-btn" onclick="openEditModal(@item.Id, '@Html.Raw(item.Name?.Replace("'", "\'"))', '@item.MainCategory', '@item.SubCategory', '@item.Color', '@item.Season', @item.PointValue, '@item.ImageUrl')">
+                            Düzenle
+                        </button>
+                    </div>
+                    <span class="ad-item-cat">@item.MainCategory</span>
+                </div>
+
+                <div class="ad-item-body">
+                    <h3 class="ad-item-name">@item.Name</h3>
+                    <div class="ad-item-meta">
+                        <span class="ad-meta-chip">@item.SubCategory</span>
+                        <span class="ad-meta-chip">@item.Color</span>
+                        <span class="ad-meta-chip">@item.Season</span>
+                    </div>
+                    <div class="ad-item-footer">
+                        <span class="ad-pts">✦ @item.PointValue pt</span>
+                        <form asp-controller="Admin" asp-action="DeleteClothingItem" method="post"
+                              onsubmit="return confirm('@item.Name silinsin mi?')" style="display:inline">
+                            <input type="hidden" name="id" value="@item.Id" />
+                            <button type="submit" class="ad-delete-btn">Sil</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- ══════════════════ EKLE MODAL ══════════════════ -->
+<div class="ad-backdrop" id="addBackdrop" onclick="closeAddModal()"></div>
+<div class="ad-modal" id="addModal">
+    <div class="ad-modal-header">
+        <h2>Yeni Kıyafet Ekle</h2>
+        <button onclick="closeAddModal()" class="ad-modal-close">✕</button>
+    </div>
+    <form asp-controller="Admin" asp-action="AddClothingItem" method="post" class="ad-form">
+        <div class="ad-form-grid">
+            <div class="ad-form-group ad-col-2">
+                <label>Kıyafet Adı</label>
+                <input type="text" name="Name" required placeholder="Örn: Gül Kurusu Blazer" class="ad-input" />
+            </div>
+            <div class="ad-form-group">
+                <label>Ana Kategori</label>
+                <select name="MainCategory" required class="ad-input">
+                    <option value="">Seç...</option>
+                    <option>Üst Giyim</option>
+                    <option>Alt Giyim</option>
+                    <option>Dış Giyim</option>
+                    <option>Aksesuar</option>
+                    <option>Ayakkabı</option>
+                    <option>Çanta</option>
+                </select>
+            </div>
+            <div class="ad-form-group">
+                <label>Alt Kategori</label>
+                <input type="text" name="SubCategory" placeholder="Örn: Blazer, Jean, Küpe" class="ad-input" />
+            </div>
+            <div class="ad-form-group">
+                <label>Renk</label>
+                <input type="text" name="Color" placeholder="Örn: Sakura, Krem" class="ad-input" />
+            </div>
+            <div class="ad-form-group">
+                <label>Mevsim</label>
+                <select name="Season" class="ad-input">
+                    <option value="">Seç...</option>
+                    <option>Yazlık</option>
+                    <option>Kışlık</option>
+                    <option>Her Mevsim</option>
+                    <option>İlkbahar/Sonbahar</option>
+                </select>
+            </div>
+            <div class="ad-form-group">
+                <label>Puan Değeri</label>
+                <input type="number" name="PointValue" value="10" min="0" class="ad-input" />
+            </div>
+            <div class="ad-form-group ad-col-2">
+                <label>Görsel URL</label>
+                <input type="text" name="ImageUrl" placeholder="https://..." class="ad-input" />
+            </div>
+        </div>
+        <div class="ad-form-actions">
+            <button type="button" onclick="closeAddModal()" class="ad-btn-ghost">İptal</button>
+            <button type="submit" class="ad-btn-primary">Ekle ✦</button>
+        </div>
+    </form>
+</div>
+
+<!-- ══════════════════ DÜZENLE MODAL ══════════════════ -->
+<div class="ad-backdrop" id="editBackdrop" onclick="closeEditModal()"></div>
+<div class="ad-modal" id="editModal">
+    <div class="ad-modal-header">
+        <h2>Kıyafeti Düzenle</h2>
+        <button onclick="closeEditModal()" class="ad-modal-close">✕</button>
+    </div>
+    <form asp-controller="Admin" asp-action="EditClothingItem" method="post" class="ad-form">
+        <input type="hidden" name="Id" id="editId" />
+        <div class="ad-form-grid">
+            <div class="ad-form-group ad-col-2">
+                <label>Kıyafet Adı</label>
+                <input type="text" name="Name" id="editName" required class="ad-input" />
+            </div>
+            <div class="ad-form-group">
+                <label>Ana Kategori</label>
+                <select name="MainCategory" id="editMainCat" class="ad-input">
+                    <option>Üst Giyim</option>
+                    <option>Alt Giyim</option>
+                    <option>Dış Giyim</option>
+                    <option>Aksesuar</option>
+                    <option>Ayakkabı</option>
+                    <option>Çanta</option>
+                </select>
+            </div>
+            <div class="ad-form-group">
+                <label>Alt Kategori</label>
+                <input type="text" name="SubCategory" id="editSubCat" class="ad-input" />
+            </div>
+            <div class="ad-form-group">
+                <label>Renk</label>
+                <input type="text" name="Color" id="editColor" class="ad-input" />
+            </div>
+            <div class="ad-form-group">
+                <label>Mevsim</label>
+                <select name="Season" id="editSeason" class="ad-input">
+                    <option>Yazlık</option>
+                    <option>Kışlık</option>
+                    <option>Her Mevsim</option>
+                    <option>İlkbahar/Sonbahar</option>
+                </select>
+            </div>
+            <div class="ad-form-group">
+                <label>Puan Değeri</label>
+                <input type="number" name="PointValue" id="editPoints" min="0" class="ad-input" />
+            </div>
+            <div class="ad-form-group ad-col-2">
+                <label>Görsel URL</label>
+                <input type="text" name="ImageUrl" id="editImg" class="ad-input" />
+            </div>
+        </div>
+        <div class="ad-form-actions">
+            <button type="button" onclick="closeEditModal()" class="ad-btn-ghost">İptal</button>
+            <button type="submit" class="ad-btn-primary">Kaydet ✦</button>
+        </div>
+    </form>
+</div>
+
+<style>
+    :root {
+        --chocolate: #443025;
+        --aloewood: #7F5836;
+        --milktea: #AA7F66;
+        --sakura: #EC9C9D;
+        --blush: #F7E9EC;
+        --cream: #FAF4F0;
+    }
+
+    /* ── Hero ─────────────────────────────── */
+    .ad-hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        padding: 3rem 3rem 1.5rem;
+        background: linear-gradient(135deg, var(--blush), var(--cream));
+        border-bottom: 1px solid rgba(236,156,157,0.2);
+    }
+
+    .ad-tag {
+        font-size: 10px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--milktea);
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    .ad-title {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2.8rem;
+        font-weight: 600;
+        color: var(--chocolate);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        line-height: 1;
+        margin: 0 0 6px;
+    }
+
+        .ad-title em {
+            font-style: italic;
+            color: var(--sakura);
+            font-weight: 300;
+        }
+
+    .ad-sub {
+        font-size: 0.88rem;
+        color: var(--aloewood);
+        font-weight: 300;
+        margin: 0;
+    }
+
+    .ad-hero-right {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    /* ── Buttons ──────────────────────────── */
+    .ad-btn-primary {
+        background: var(--chocolate);
+        color: var(--cream);
+        border: none;
+        padding: 10px 22px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        text-decoration: none;
+        display: inline-block;
+        transition: background 0.2s;
+    }
+
+        .ad-btn-primary:hover {
+            background: var(--aloewood);
+            color: var(--cream);
+            text-decoration: none;
+        }
+
+    .ad-btn-ghost {
+        background: transparent;
+        color: var(--aloewood);
+        border: 1px solid rgba(236,156,157,0.4);
+        padding: 9px 20px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s;
+    }
+
+        .ad-btn-ghost:hover {
+            border-color: var(--sakura);
+            color: var(--chocolate);
+            text-decoration: none;
+        }
+
+    /* ── Stats ────────────────────────────── */
+    .ad-stats-row {
+        display: flex;
+        gap: 1rem;
+        padding: 1.5rem 3rem;
+        background: var(--cream);
+        border-bottom: 1px solid rgba(236,156,157,0.12);
+    }
+
+    .ad-stat-card {
+        flex: 1;
+        background: #fff;
+        border: 1px solid rgba(236,156,157,0.2);
+        border-radius: 14px;
+        padding: 1rem 1.25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .ad-stat-num {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--chocolate);
+        line-height: 1;
+    }
+
+    .ad-stat-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--milktea);
+    }
+
+    /* ── Toolbar ──────────────────────────── */
+    .ad-toolbar {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding: 1.25rem 3rem;
+        background: var(--cream);
+        border-bottom: 1px solid rgba(236,156,157,0.12);
+        flex-wrap: wrap;
+    }
+
+    .ad-search {
+        flex: 1;
+        min-width: 200px;
+        border: 1px solid rgba(236,156,157,0.3);
+        border-radius: 50px;
+        padding: 9px 18px;
+        font-size: 13px;
+        font-family: 'DM Sans', sans-serif;
+        color: var(--chocolate);
+        background: #fff;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+
+        .ad-search:focus {
+            border-color: var(--sakura);
+        }
+
+    .ad-filter-group {
+        display: flex;
+        gap: 8px;
+    }
+
+    .ad-select {
+        border: 1px solid rgba(236,156,157,0.3);
+        border-radius: 50px;
+        padding: 8px 16px;
+        font-size: 12px;
+        font-family: 'DM Sans', sans-serif;
+        color: var(--aloewood);
+        background: #fff;
+        outline: none;
+        cursor: pointer;
+    }
+
+    /* ── Grid ─────────────────────────────── */
+    .ad-container {
+        padding: 2rem 3rem 5rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .ad-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.25rem;
+    }
+
+    /* ── Kart ─────────────────────────────── */
+    .ad-item-card {
+        background: #fff;
+        border: 1px solid rgba(236,156,157,0.2);
+        border-radius: 16px;
+        overflow: hidden;
+        transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+    }
+
+        .ad-item-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 36px rgba(68,48,37,0.09);
+            border-color: var(--sakura);
+        }
+
+    .ad-item-img-wrap {
+        position: relative;
+        aspect-ratio: 3/4;
+        overflow: hidden;
+        background: var(--blush);
+    }
+
+        .ad-item-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s;
+        }
+
+    .ad-item-card:hover .ad-item-img-wrap img {
+        transform: scale(1.04);
+    }
+
+    .ad-item-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(68,48,37,0.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .ad-item-card:hover .ad-item-overlay {
+        opacity: 1;
+    }
+
+    .ad-overlay-btn {
+        background: rgba(255,255,255,0.92);
+        color: var(--chocolate);
+        border: none;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-size: 11px;
+        font-weight: 500;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+    }
+
+    .ad-item-cat {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        background: rgba(255,255,255,0.88);
+        color: var(--aloewood);
+        font-size: 8px;
+        font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 3px 9px;
+        border-radius: 50px;
+    }
+
+    .ad-item-body {
+        padding: 0.8rem 0.9rem 0.9rem;
+    }
+
+    .ad-item-name {
+        font-family: 'Cormorant Garamond', serif;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--chocolate);
+        margin-bottom: 0.4rem;
+        line-height: 1.2;
+    }
+
+    .ad-item-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+        margin-bottom: 0.6rem;
+    }
+
+    .ad-meta-chip {
+        background: rgba(236,156,157,0.1);
+        color: var(--aloewood);
+        font-size: 9px;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+        padding: 2px 8px;
+        border-radius: 50px;
+        border: 1px solid rgba(236,156,157,0.2);
+    }
+
+    .ad-item-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid rgba(236,156,157,0.12);
+        padding-top: 0.55rem;
+    }
+
+    .ad-pts {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--milktea);
+    }
+
+    .ad-delete-btn {
+        background: none;
+        border: 1px solid rgba(236,100,100,0.3);
+        color: #c0392b;
+        font-size: 10px;
+        font-weight: 500;
+        padding: 3px 10px;
+        border-radius: 50px;
+        cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        transition: all 0.2s;
+    }
+
+        .ad-delete-btn:hover {
+            background: #ffeaea;
+            border-color: #c0392b;
+        }
+
+    /* ── Modal ────────────────────────────── */
+    .ad-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(44,28,18,0.55);
+        z-index: 2000;
+        backdrop-filter: blur(4px);
+    }
+
+        .ad-backdrop.open {
+            display: block;
+        }
+
+    .ad-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: min(94vw, 620px);
+        max-height: 90vh;
+        overflow-y: auto;
+        background: #fff;
+        border-radius: 20px;
+        z-index: 2001;
+        box-shadow: 0 28px 72px rgba(68,48,37,0.18);
+        padding: 0;
+    }
+
+        .ad-modal.open {
+            display: block;
+        }
+
+    .ad-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid rgba(236,156,157,0.15);
+        position: sticky;
+        top: 0;
+        background: #fff;
+        z-index: 1;
+    }
+
+        .ad-modal-header h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--chocolate);
+            margin: 0;
+        }
+
+    .ad-modal-close {
+        background: none;
+        border: 1px solid rgba(236,156,157,0.3);
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        font-size: 12px;
+        cursor: pointer;
+        color: var(--chocolate);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* ── Form ─────────────────────────────── */
+    .ad-form {
+        padding: 1.5rem;
+    }
+
+    .ad-form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    .ad-form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .ad-col-2 {
+        grid-column: 1 / -1;
+    }
+
+    .ad-form-group label {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--milktea);
+    }
+
+    .ad-input {
+        border: 1px solid rgba(236,156,157,0.3);
+        border-radius: 10px;
+        padding: 9px 13px;
+        font-size: 13px;
+        font-family: 'DM Sans', sans-serif;
+        color: var(--chocolate);
+        background: var(--cream);
+        outline: none;
+        transition: border-color 0.2s;
+        width: 100%;
+    }
+
+        .ad-input:focus {
+            border-color: var(--sakura);
+            background: #fff;
+        }
+
+    .ad-form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(236,156,157,0.15);
+    }
+
+    @@media (max-width: 900px) {
+        .ad-hero {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 2rem 1.5rem 1rem;
+        }
+
+        .ad-stats-row {
+            padding: 1rem 1.5rem;
+        }
+
+        .ad-toolbar {
+            padding: 1rem 1.5rem;
+        }
+
+        .ad-container {
+            padding: 1.5rem 1rem 4rem;
+        }
+
+        .ad-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .ad-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .ad-col-2 {
+            grid-column: 1;
+        }
+    }
+</style>
+
+<script>
+    /* ── Filtrele ──────────────────── */
+    function filterItems() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const cat    = document.getElementById('catFilter').value;
+        const season = document.getElementById('seasonFilter').value;
+
+        document.querySelectorAll('.ad-item-card').forEach(card => {
+            const name    = card.dataset.name || '';
+            const cardCat = card.dataset.cat  || '';
+            const cardSea = card.dataset.season || '';
+            const color   = card.dataset.color || '';
+
+            const matchSearch = name.includes(search) || color.toLowerCase().includes(search);
+            const matchCat    = !cat    || cardCat === cat;
+            const matchSeason = !season || cardSea === season;
+
+            card.style.display = (matchSearch && matchCat && matchSeason) ? '' : 'none';
+        });
+    }
+
+    /* ── Add Modal ─────────────────── */
+    function openAddModal() {
+        document.getElementById('addBackdrop').classList.add('open');
+        document.getElementById('addModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeAddModal() {
+        document.getElementById('addBackdrop').classList.remove('open');
+        document.getElementById('addModal').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    /* ── Edit Modal ────────────────── */
+    function openEditModal(id, name, mainCat, subCat, color, season, points, img) {
+        document.getElementById('editId').value    = id;
+        document.getElementById('editName').value  = name;
+        document.getElementById('editSubCat').value = subCat;
+        document.getElementById('editColor').value = color;
+        document.getElementById('editPoints').value = points;
+        document.getElementById('editImg').value   = img;
+
+        const mainSel = document.getElementById('editMainCat');
+        for (let o of mainSel.options) { if (o.value === mainCat) o.selected = true; }
+
+        const seaSel = document.getElementById('editSeason');
+        for (let o of seaSel.options) { if (o.value === season) o.selected = true; }
+
+        document.getElementById('editBackdrop').classList.add('open');
+        document.getElementById('editModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeEditModal() {
+        document.getElementById('editBackdrop').classList.remove('open');
+        document.getElementById('editModal').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { closeAddModal(); closeEditModal(); }
+    });
+</script>
